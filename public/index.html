@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1f2937">
+  <meta name="description" content="Fyling Hall Orienteering App">
+  <link rel="manifest" href="/manifest.json">
+  <title>Fyling Hall Orienteering</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 0;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button.secondary {
+      background: #9CA3AF;
+    }
+
+    button.secondary:hover {
+      background: #6B7280;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: #1f2937;
+    }
+
+    .course-select, .house-select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .checkpoint-list {
+      list-style: none;
+      margin: 15px 0;
+    }
+
+    .checkpoint-item {
+      padding: 12px;
+      margin: 8px 0;
+      background: #f3f4f6;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .checkpoint-item.scanned {
+      background: #d1fae5;
+      border-left-color: #10b981;
+    }
+
+    .timer {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      color: #667eea;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .qr-scanner {
+      width: 100%;
+      height: 300px;
+      background: #000;
+      border-radius: 8px;
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .leaderboard-table th {
+      background: #f3f4f6;
+      padding: 10px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .leaderboard-table td {
+      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .leaderboard-table tr:hover {
+      background: #f9fafb;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge.gold { background: #fcd34d; color: #78350f; }
+    .badge.silver { background: #e5e7eb; color: #374151; }
+    .badge.bronze { background: #fed7aa; color: #92400e; }
+
+    .hidden {
+      display: none;
+    }
+
+    .results-summary {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .results-summary h2 {
+      color: #059669;
+      margin-bottom: 10px;
+    }
+
+    .time-display {
+      font-size: 28px;
+      font-weight: bold;
+      color: #059669;
+      font-family: 'Courier New', monospace;
+    }
+
+    .status-message {
+      padding: 10px;
+      border-radius: 6px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .status-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .stat-card {
+      background: #f3f4f6;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .timer {
+        font-size: 32px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🏕️ Orienteering</h1>
+      <p>Fyling Hall School</p>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="card">
+      <div class="section">
+        <h2>Welcome</h2>
+        <p style="margin-bottom: 15px; color: #6b7280;">Select your house and team to begin.</p>
+
+        <label style="display: block; margin-bottom: 8px; font-weight: 600;">House</label>
+        <select id="houseSelect" class="house-select">
+          <option value="">-- Select your house --</option>
+          <option value="Ardsley">Ardsley</option>
+          <option value="Bainbridge">Bainbridge</option>
+          <option value="Constantine">Constantine</option>
+          <option value="Dalton">Dalton</option>
+        </select>
+
+        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Team Name</label>
+        <input type="text" id="teamNameInput" placeholder="e.g., Team A" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 15px;">
+
+        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Course Difficulty</label>
+        <select id="courseSelect" class="course-select">
+          <option value="">-- Select course --</option>
+          <option value="easy">Easy (5 checkpoints)</option>
+          <option value="medium">Medium (8 checkpoints)</option>
+          <option value="hard">Hard (12 checkpoints)</option>
+        </select>
+
+        <button onclick="startCourse()">Start Course</button>
+      </div>
+    </div>
+
+    <!-- Active Course Screen -->
+    <div id="courseScreen" class="card hidden">
+      <div class="section">
+        <h2 id="courseTitle">Medium Course</h2>
+        <p id="teamDisplay" style="color: #6b7280; margin-bottom: 15px;"></p>
+
+        <div class="timer" id="timer">00:00:00</div>
+
+        <div class="section">
+          <h3 style="margin-bottom: 10px;">Checkpoints</h3>
+          <ul class="checkpoint-list" id="checkpointList"></ul>
+        </div>
+
+        <div class="section">
+          <h3 style="margin-bottom: 10px;">Scan QR Code</h3>
+          <div class="qr-scanner" id="qrScanner">
+            <div id="qrStatus">📱 Point camera at QR code</div>
+          </div>
+          <input type="text" id="qrInput" placeholder="QR Code (auto-scanned)" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 10px;">
+          <button onclick="scanCheckpoint()">Scan Checkpoint</button>
+        </div>
+
+        <button class="secondary" onclick="finishCourse()">Finish Course</button>
+        <button class="secondary" onclick="abandonCourse()">Abandon</button>
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="card hidden">
+      <div class="results-summary">
+        <h2>✅ Course Complete!</h2>
+        <div class="time-display" id="finalTime">00:12:34</div>
+        <p style="margin-top: 10px; color: #059669;">House points awarded: <strong>100</strong></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Checkpoints Scanned</div>
+          <div class="stat-value" id="checkpointCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Efficiency Score</div>
+          <div class="stat-value" id="efficiencyScore">100%</div>
+        </div>
+      </div>
+
+      <button onclick="viewLeaderboard()">View Leaderboard</button>
+      <button class="secondary" onclick="startNewRun()">New Course</button>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div id="leaderboardScreen" class="card hidden">
+      <div class="section">
+        <h2>Leaderboard</h2>
+        <button class="secondary" onclick="goBack()">← Back</button>
+
+        <div style="margin-top: 15px;">
+          <h3 style="margin-bottom: 10px;">House Standings</h3>
+          <table class="leaderboard-table" id="houseTable">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>House</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody id="houseBody"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h3 style="margin-bottom: 10px;">Course Results</h3>
+          <table class="leaderboard-table" id="courseTable">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>House</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="courseBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // App state
+    let appState = {
+      house: '',
+      teamName: '',
+      courseDifficulty: '',
+      courseId: '',
+      startTime: null,
+      checkpoints: [],
+      scannedCheckpoints: [],
+      timerInterval: null
+    };
+
+    // Initialize service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+    }
+
+    // Timer management
+    function updateTimer() {
+      if (appState.startTime) {
+        const elapsed = Math.floor((Date.now() - appState.startTime) / 1000);
+        const hours = Math.floor(elapsed / 3600);
+        const minutes = Math.floor((elapsed % 3600) / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timer').textContent =
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+    }
+
+    function startCourse() {
+      const house = document.getElementById('houseSelect').value;
+      const teamName = document.getElementById('teamNameInput').value;
+      const difficulty = document.getElementById('courseSelect').value;
+
+      if (!house || !teamName || !difficulty) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      appState.house = house;
+      appState.teamName = teamName;
+      appState.courseDifficulty = difficulty;
+      appState.courseId = `course-${difficulty}-${Date.now()}`;
+
+      // Set up course details
+      const checkpointCounts = { easy: 5, medium: 8, hard: 12 };
+      const count = checkpointCounts[difficulty];
+      appState.checkpoints = Array.from({ length: count }, (_, i) => ({
+        id: `CP${i + 1}`,
+        name: `Checkpoint ${i + 1}`,
+        scanned: false,
+        time: null
+      }));
+
+      // Update display
+      document.getElementById('courseTitle').textContent = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Course`;
+      document.getElementById('teamDisplay').textContent = `Team: ${teamName} • House: ${house}`;
+
+      // Render checkpoints
+      const checkpointList = document.getElementById('checkpointList');
+      checkpointList.innerHTML = appState.checkpoints.map(cp => `
+        <li class="checkpoint-item" id="cp-${cp.id}">
+          <span>${cp.name}</span>
+          <span id="status-${cp.id}">⭕</span>
+        </li>
+      `).join('');
+
+      // Start timer
+      appState.startTime = Date.now();
+      appState.timerInterval = setInterval(updateTimer, 100);
+
+      // Switch screens
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('courseScreen').classList.remove('hidden');
+    }
+
+    function scanCheckpoint() {
+      const qrCode = document.getElementById('qrInput').value.trim();
+
+      if (!qrCode) {
+        alert('Please scan a QR code');
+        return;
+      }
+
+      const checkpointId = qrCode.toUpperCase();
+      const checkpoint = appState.checkpoints.find(cp => cp.id === checkpointId);
+
+      if (!checkpoint) {
+        alert('Invalid checkpoint QR code');
+        return;
+      }
+
+      if (checkpoint.scanned) {
+        alert('You already scanned this checkpoint');
+        return;
+      }
+
+      checkpoint.scanned = true;
+      checkpoint.time = Date.now();
+      appState.scannedCheckpoints.push(checkpointId);
+
+      // Update UI
+      const cpElement = document.getElementById(`cp-${checkpointId}`);
+      cpElement.classList.add('scanned');
+      document.getElementById(`status-${checkpointId}`).textContent = '✅';
+
+      document.getElementById('qrInput').value = '';
+
+      // Show feedback
+      const message = document.createElement('div');
+      message.className = 'status-message status-success';
+      message.textContent = `✓ ${checkpointId} scanned!`;
+      document.getElementById('courseScreen').insertBefore(message, document.getElementById('timer').nextSibling);
+      setTimeout(() => message.remove(), 2000);
+    }
+
+    function finishCourse() {
+      clearInterval(appState.timerInterval);
+
+      const endTime = Date.now();
+      const totalTime = Math.floor((endTime - appState.startTime) / 1000);
+      const checkpointCount = appState.scannedCheckpoints.length;
+
+      // Calculate results
+      const hours = Math.floor(totalTime / 3600);
+      const minutes = Math.floor((totalTime % 3600) / 60);
+      const seconds = totalTime % 60;
+      const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      const efficiency = Math.round((checkpointCount / appState.checkpoints.length) * 100);
+
+      // Display results
+      document.getElementById('finalTime').textContent = timeString;
+      document.getElementById('checkpointCount').textContent = checkpointCount;
+      document.getElementById('efficiencyScore').textContent = `${efficiency}%`;
+
+      // Save result locally (for offline sync later)
+      saveResultLocally({
+        house: appState.house,
+        teamName: appState.teamName,
+        difficulty: appState.courseDifficulty,
+        totalTime: totalTime,
+        checkpoints: checkpointCount,
+        efficiency: efficiency,
+        timestamp: new Date().toISOString()
+      });
+
+      // Switch screens
+      document.getElementById('courseScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+    }
+
+    function abandonCourse() {
+      if (confirm('Abandon this course? Progress will be lost.')) {
+        clearInterval(appState.timerInterval);
+        document.getElementById('courseScreen').classList.add('hidden');
+        document.getElementById('welcomeScreen').classList.remove('hidden');
+      }
+    }
+
+    function startNewRun() {
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('welcomeScreen').classList.remove('hidden');
+      document.getElementById('houseSelect').value = appState.house;
+      document.getElementById('teamNameInput').value = '';
+      document.getElementById('courseSelect').value = '';
+    }
+
+    function viewLeaderboard() {
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('leaderboardScreen').classList.remove('hidden');
+      loadLeaderboard();
+    }
+
+    function goBack() {
+      document.getElementById('leaderboardScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+    }
+
+    function loadLeaderboard() {
+      // Mock data for now
+      const mockHouseData = [
+        { house: 'Ardsley', points: 300 },
+        { house: 'Bainbridge', points: 250 },
+        { house: 'Constantine', points: 200 },
+        { house: 'Dalton', points: 150 }
+      ];
+
+      const mockCourseData = [
+        { team: 'Team A', house: 'Ardsley', time: '12:34' },
+        { team: 'Team B', house: 'Bainbridge', time: '13:45' },
+        { team: 'Team C', house: 'Constantine', time: '14:23' }
+      ];
+
+      const houseBody = document.getElementById('houseBody');
+      houseBody.innerHTML = mockHouseData.map((h, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><strong>${h.house}</strong></td>
+          <td>${h.points} pts</td>
+        </tr>
+      `).join('');
+
+      const courseBody = document.getElementById('courseBody');
+      courseBody.innerHTML = mockCourseData.map(c => `
+        <tr>
+          <td>${c.team}</td>
+          <td>${c.house}</td>
+          <td>${c.time}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Local storage for offline data
+    function saveResultLocally(result) {
+      let results = JSON.parse(localStorage.getItem('orienteering_results') || '[]');
+      results.push(result);
+      localStorage.setItem('orienteering_results', JSON.stringify(results));
+    }
+  </script>
+</body>
+</html>
