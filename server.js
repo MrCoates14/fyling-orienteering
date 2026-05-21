@@ -58,6 +58,7 @@ const initDB = () => {
         checkpointsScanned INTEGER,
         totalCheckpoints INTEGER,
         completed INTEGER DEFAULT 0,
+        points INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -141,8 +142,7 @@ app.post('/api/teams', (req, res) => {
 
 // Submit a result (student app)
 app.post('/api/results', (req, res) => {
-  // Accept both old format (team_id, course_id) and new format (team, course)
-  const team = req.body.team || req.body.team_name;
+  const team = req.body.team;
   const house = req.body.house;
   const course = req.body.course;
   const time = req.body.time;
@@ -151,10 +151,17 @@ app.post('/api/results', (req, res) => {
   const completed = req.body.completed || false;
   const id = uuidv4();
 
+  // Calculate points: 5 per checkpoint + 100 bonus if complete - time penalty (1 per 10 seconds)
+  let points = checkpointsScanned * 5;
+  if (completed) {
+    points += 100 - Math.floor(time / 10);
+  }
+  points = Math.max(0, points); // Don't allow negative points
+
   db.run(
-    `INSERT INTO results (id, team, house, course, time, checkpointsScanned, totalCheckpoints, completed, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-    [id, team, house, course, time, checkpointsScanned, totalCheckpoints, completed ? 1 : 0],
+    `INSERT INTO results (id, team, house, course, time, checkpointsScanned, totalCheckpoints, completed, points, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+    [id, team, house, course, time, checkpointsScanned, totalCheckpoints, completed ? 1 : 0, points],
     (err) => {
       if (err) {
         console.error('Insert error:', err);
@@ -162,7 +169,7 @@ app.post('/api/results', (req, res) => {
         return;
       }
 
-      res.json({ id, team, house, course, time });
+      res.json({ id, team, house, course, time, points });
     }
   );
 });

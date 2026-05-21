@@ -1,217 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Orienteering QR Codes - Print</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkpoint QR Codes - Print</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: Arial; margin: 20px; background: white; }
-        h1 { text-align: center; }
-        .course { page-break-after: always; margin-bottom: 40px; }
-        .course h2 { border-bottom: 3px solid #333; padding-bottom: 10px; }
-        .checkpoints { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .checkpoint { text-align: center; border: 2px solid #ccc; padding: 20px; break-inside: avoid; }
-        .checkpoint h3 { margin: 0 0 15px 0; font-size: 24px; }
-        #qr1, #qr2, #qr3, #qr4, #qr5, #qr6, #qr7, #qr8, #qr9, #qr10, #qr11, #qr12, #qr13, #qr14, #qr15, #qr16, #qr17, #qr18, #qr19, #qr20, #qr21, #qr22, #qr23, #qr24, #qr25 { margin: 0 auto; }
-        @media print { body { margin: 0; } .course { page-break-after: always; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            .page {
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .qr-code-item {
+                page-break-inside: avoid;
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .instructions {
+            background: #e8f4f8;
+            border: 2px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .page {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .page-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .qr-code-item {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .qr-code-item canvas {
+            border: 2px solid #ddd;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .checkpoint-label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <h1>🧭 Fyling Hall Orienteering - QR Code Checkpoints</h1>
-    <p style="text-align: center; color: #666;">Print this page and laminate each checkpoint card</p>
-
-    <div class="course">
-        <h2>Easy Course (5 Checkpoints)</h2>
-        <div class="checkpoints">
-            <div class="checkpoint"><h3>CP1</h3><div id="qr1"></div></div>
-            <div class="checkpoint"><h3>CP2</h3><div id="qr2"></div></div>
-            <div class="checkpoint"><h3>CP3</h3><div id="qr3"></div></div>
-            <div class="checkpoint"><h3>CP4</h3><div id="qr4"></div></div>
-            <div class="checkpoint"><h3>CP5</h3><div id="qr5"></div></div>
-        </div>
+    <div class="header">
+        <h1>🎯 Orienteering Checkpoint QR Codes</h1>
+        <p>Fyling Hall School - Print and Cut</p>
     </div>
 
-    <div class="course">
-        <h2>Medium Course (8 Checkpoints)</h2>
-        <div class="checkpoints">
-            <div class="checkpoint"><h3>CP1</h3><div id="qr6"></div></div>
-            <div class="checkpoint"><h3>CP2</h3><div id="qr7"></div></div>
-            <div class="checkpoint"><h3>CP3</h3><div id="qr8"></div></div>
-            <div class="checkpoint"><h3>CP4</h3><div id="qr9"></div></div>
-            <div class="checkpoint"><h3>CP5</h3><div id="qr10"></div></div>
-            <div class="checkpoint"><h3>CP6</h3><div id="qr11"></div></div>
-            <div class="checkpoint"><h3>CP7</h3><div id="qr12"></div></div>
-            <div class="checkpoint"><h3>CP8</h3><div id="qr13"></div></div>
-        </div>
+    <div class="instructions">
+        <strong>Instructions:</strong>
+        <ul>
+            <li>Print all pages</li>
+            <li>Cut along the dashed lines</li>
+            <li>Laminate each card for durability</li>
+            <li>Place at checkpoint locations as shown on your course maps</li>
+            <li>Numbers 1-12 are used for all 12 courses</li>
+        </ul>
     </div>
 
-    <div class="course">
-        <h2>Hard Course (12 Checkpoints)</h2>
-        <div class="checkpoints">
-            <div class="checkpoint"><h3>CP1</h3><div id="qr14"></div></div>
-            <div class="checkpoint"><h3>CP2</h3><div id="qr15"></div></div>
-            <div class="checkpoint"><h3>CP3</h3><div id="qr16"></div></div>
-            <div class="checkpoint"><h3>CP4</h3><div id="qr17"></div></div>
-            <div class="checkpoint"><h3>CP5</h3><div id="qr18"></div></div>
-            <div class="checkpoint"><h3>CP6</h3><div id="qr19"></div></div>
-            <div class="checkpoint"><h3>CP7</h3><div id="qr20"></div></div>
-            <div class="checkpoint"><h3>CP8</h3><div id="qr21"></div></div>
-            <div class="checkpoint"><h3>CP9</h3><div id="qr22"></div></div>
-            <div class="checkpoint"><h3>CP10</h3><div id="qr23"></div></div>
-            <div class="checkpoint"><h3>CP11</h3><div id="qr24"></div></div>
-            <div class="checkpoint"><h3>CP12</h3><div id="qr25"></div></div>
-        </div>
+    <div class="page">
+        <div class="page-title">Checkpoints 1-9</div>
+        <div class="qr-grid" id="grid1"></div>
+    </div>
+
+    <div class="page">
+        <div class="page-title">Checkpoints 10-12</div>
+        <div class="qr-grid" id="grid2"></div>
     </div>
 
     <script>
-        // Generate QR codes for all checkpoints
-        const generateQR = (elementId, text) => {
-            new QRCode(document.getElementById(elementId), {
-                text: text,
+        // Generate QR codes for checkpoints 1-12
+        const checkpoints1 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const checkpoints2 = [10, 11, 12];
+
+        function generateQRCode(checkpoint, containerId) {
+            const container = document.createElement('div');
+            container.className = 'qr-code-item';
+
+            const qrDiv = document.createElement('div');
+            qrDiv.id = `qr-${checkpoint}`;
+            container.appendChild(qrDiv);
+
+            const label = document.createElement('div');
+            label.className = 'checkpoint-label';
+            label.textContent = checkpoint;
+            container.appendChild(label);
+
+            document.getElementById(containerId).appendChild(container);
+
+            // Generate QR code
+            new QRCode(qrDiv, {
+                text: String(checkpoint),
                 width: 150,
                 height: 150,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
-        };
+        }
 
-        // Easy course
-        generateQR('qr1', 'CP1');
-        generateQR('qr2', 'CP2');
-        generateQR('qr3', 'CP3');
-        generateQR('qr4', 'CP4');
-        generateQR('qr5', 'CP5');
+        // Generate grid 1 (checkpoints 1-9)
+        checkpoints1.forEach(cp => generateQRCode(cp, 'grid1'));
 
-        // Medium course
-        generateQR('qr6', 'CP1');
-        generateQR('qr7', 'CP2');
-        generateQR('qr8', 'CP3');
-        generateQR('qr9', 'CP4');
-        generateQR('qr10', 'CP5');
-        generateQR('qr11', 'CP6');
-        generateQR('qr12', 'CP7');
-        generateQR('qr13', 'CP8');
-
-        // Hard course
-        generateQR('qr14', 'CP1');
-        generateQR('qr15', 'CP2');
-        generateQR('qr16', 'CP3');
-        generateQR('qr17', 'CP4');
-        generateQR('qr18', 'CP5');
-        generateQR('qr19', 'CP6');
-        generateQR('qr20', 'CP7');
-        generateQR('qr21', 'CP8');
-        generateQR('qr22', 'CP9');
-        generateQR('qr23', 'CP10');
-        generateQR('qr24', 'CP11');
-        generateQR('qr25', 'CP12');
-    </script>
-</body>
-</html>
-cat > ~/fyling-orienteering/public/qr-codes.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Orienteering QR Codes - Print</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        body { font-family: Arial; margin: 20px; background: white; }
-        h1 { text-align: center; }
-        .course { page-break-after: always; margin-bottom: 40px; }
-        .course h2 { border-bottom: 3px solid #333; padding-bottom: 10px; }
-        .checkpoints { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .checkpoint { text-align: center; border: 2px solid #ccc; padding: 20px; break-inside: avoid; }
-        .checkpoint h3 { margin: 0 0 15px 0; font-size: 24px; }
-        #qr1, #qr2, #qr3, #qr4, #qr5, #qr6, #qr7, #qr8, #qr9, #qr10, #qr11, #qr12, #qr13, #qr14, #qr15, #qr16, #qr17, #qr18, #qr19, #qr20, #qr21, #qr22, #qr23, #qr24, #qr25 { margin: 0 auto; }
-        @media print { body { margin: 0; } .course { page-break-after: always; } }
-    </style>
-</head>
-<body>
-    <h1>🧭 Fyling Hall Orienteering - QR Code Checkpoints</h1>
-    <p style="text-align: center; color: #666;">Print this page and laminate each checkpoint card</p>
-
-    <div class="course">
-        <h2>Easy Course (5 Checkpoints)</h2>
-        <div class="checkpoints">
-            <div class="checkpoint"><h3>CP1</h3><div id="qr1"></div></div>
-            <div class="checkpoint"><h3>CP2</h3><div id="qr2"></div></div>
-            <div class="checkpoint"><h3>CP3</h3><div id="qr3"></div></div>
-            <div class="checkpoint"><h3>CP4</h3><div id="qr4"></div></div>
-            <div class="checkpoint"><h3>CP5</h3><div id="qr5"></div></div>
-        </div>
-    </div>
-
-    <div class="course">
-        <h2>Medium Course (8 Checkpoints)</h2>
-        <div class="checkpoints">
-            <div class="checkpoint"><h3>CP1</h3><div id="qr6"></div></div>
-            <div class="checkpoint"><h3>CP2</h3><div id="qr7"></div></div>
-            <div class="checkpoint"><h3>CP3</h3><div id="qr8"></div></div>
-            <div class="checkpoint"><h3>CP4</h3><div id="qr9"></div></div>
-            <div class="checkpoint"><h3>CP5</h3><div id="qr10"></div></div>
-            <div class="checkpoint"><h3>CP6</h3><div id="qr11"></div></div>
-            <div class="checkpoint"><h3>CP7</h3><div id="qr12"></div></div>
-            <div class="checkpoint"><h3>CP8</h3><div id="qr13"></div></div>
-        </div>
-    </div>
-
-    <div class="course">
-        <h2>Hard Course (12 Checkpoints)</h2>
-        <div class="checkpoints">
-            <div class="checkpoint"><h3>CP1</h3><div id="qr14"></div></div>
-            <div class="checkpoint"><h3>CP2</h3><div id="qr15"></div></div>
-            <div class="checkpoint"><h3>CP3</h3><div id="qr16"></div></div>
-            <div class="checkpoint"><h3>CP4</h3><div id="qr17"></div></div>
-            <div class="checkpoint"><h3>CP5</h3><div id="qr18"></div></div>
-            <div class="checkpoint"><h3>CP6</h3><div id="qr19"></div></div>
-            <div class="checkpoint"><h3>CP7</h3><div id="qr20"></div></div>
-            <div class="checkpoint"><h3>CP8</h3><div id="qr21"></div></div>
-            <div class="checkpoint"><h3>CP9</h3><div id="qr22"></div></div>
-            <div class="checkpoint"><h3>CP10</h3><div id="qr23"></div></div>
-            <div class="checkpoint"><h3>CP11</h3><div id="qr24"></div></div>
-            <div class="checkpoint"><h3>CP12</h3><div id="qr25"></div></div>
-        </div>
-    </div>
-
-    <script>
-        // Generate QR codes for all checkpoints
-        const generateQR = (elementId, text) => {
-            new QRCode(document.getElementById(elementId), {
-                text: text,
-                width: 150,
-                height: 150,
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        };
-
-        // Easy course
-        generateQR('qr1', 'CP1');
-        generateQR('qr2', 'CP2');
-        generateQR('qr3', 'CP3');
-        generateQR('qr4', 'CP4');
-        generateQR('qr5', 'CP5');
-
-        // Medium course
-        generateQR('qr6', 'CP1');
-        generateQR('qr7', 'CP2');
-        generateQR('qr8', 'CP3');
-        generateQR('qr9', 'CP4');
-        generateQR('qr10', 'CP5');
-        generateQR('qr11', 'CP6');
-        generateQR('qr12', 'CP7');
-        generateQR('qr13', 'CP8');
-
-        // Hard course
-        generateQR('qr14', 'CP1');
-        generateQR('qr15', 'CP2');
-        generateQR('qr16', 'CP3');
-        generateQR('qr17', 'CP4');
-        generateQR('qr18', 'CP5');
-        generateQR('qr19', 'CP6');
-        generateQR('qr20', 'CP7');
-        generateQR('qr21', 'CP8');
-        generateQR('qr22', 'CP9');
-        generateQR('qr23', 'CP10');
-        generateQR('qr24', 'CP11');
-        generateQR('qr25', 'CP12');
+        // Generate grid 2 (checkpoints 10-12)
+        checkpoints2.forEach(cp => generateQRCode(cp, 'grid2'));
     </script>
 </body>
 </html>

@@ -106,9 +106,24 @@
     <div class="container">
         <div class="controls">
             <select id="courseSelect" onchange="loadCourse()">
-                <option value="easy">Easy Course (5 checkpoints)</option>
-                <option value="medium">Medium Course (8 checkpoints)</option>
-                <option value="hard">Hard Course (12 checkpoints)</option>
+                <optgroup label="Easy">
+                    <option value="Easy 1">Easy Course 1</option>
+                    <option value="Easy 2">Easy Course 2</option>
+                    <option value="Easy 3">Easy Course 3</option>
+                    <option value="Easy 4">Easy Course 4</option>
+                </optgroup>
+                <optgroup label="Medium">
+                    <option value="Medium 1">Medium Course 1</option>
+                    <option value="Medium 2">Medium Course 2</option>
+                    <option value="Medium 3">Medium Course 3</option>
+                    <option value="Medium 4">Medium Course 4</option>
+                </optgroup>
+                <optgroup label="Hard">
+                    <option value="Hard 1">Hard Course 1</option>
+                    <option value="Hard 2">Hard Course 2</option>
+                    <option value="Hard 3">Hard Course 3</option>
+                    <option value="Hard 4">Hard Course 4</option>
+                </optgroup>
             </select>
             <button onclick="refreshData()">🔄 Refresh Live Data</button>
             <button onclick="exportCSV()">📊 Export Results</button>
@@ -130,6 +145,7 @@
                         <th>House</th>
                         <th>Time</th>
                         <th>Checkpoints</th>
+                        <th>Points</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -194,7 +210,8 @@
                 if (!houses[result.house]) {
                     houses[result.house] = { points: 0, sessions: 0 };
                 }
-                houses[result.house].points += result.completed ? 100 : 50;
+                // Use points from database (calculated by server)
+                houses[result.house].points += result.points || 0;
                 houses[result.house].sessions += 1;
             });
 
@@ -210,9 +227,9 @@
                 <div class="house-item house-${h.house.toLowerCase()}">
                     <div>
                         <div class="house-name">#${h.rank} ${h.house}</div>
-                        <div class="house-stats">${h.sessions} sessions completed</div>
+                        <div class="house-stats">${h.sessions} sessions • ${h.points} pts total</div>
                     </div>
-                    <div class="house-points">${h.points} pts</div>
+                    <div class="house-points">${h.points}</div>
                 </div>
             `).join('');
         }
@@ -225,6 +242,7 @@
                     <td>${r.house}</td>
                     <td>${Math.floor(r.time / 60)}m ${r.time % 60}s</td>
                     <td>${r.checkpointsScanned}/${r.totalCheckpoints}</td>
+                    <td><strong>${r.points || 0}</strong></td>
                     <td>${r.completed ? '✓ Complete' : '○ Incomplete'}</td>
                 </tr>
             `).join('');
@@ -236,13 +254,14 @@
 
         function exportCSV() {
             const course = document.getElementById('courseSelect').value;
-            const headers = ['Team', 'House', 'Course', 'Time', 'Checkpoints', 'Status'];
+            const headers = ['Team', 'House', 'Course', 'Time', 'Checkpoints', 'Points', 'Status'];
             const rows = allResults.map(r => [
                 r.team,
                 r.house,
                 r.course,
                 `${Math.floor(r.time / 60)}m ${r.time % 60}s`,
                 `${r.checkpointsScanned}/${r.totalCheckpoints}`,
+                r.points || 0,
                 r.completed ? 'Complete' : 'Incomplete'
             ]);
 
