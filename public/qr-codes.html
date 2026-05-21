@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orienteering QR Codes - Print</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial; margin: 20px; background: white; }
+        h1 { text-align: center; }
+        .course { page-break-after: always; margin-bottom: 40px; }
+        .course h2 { border-bottom: 3px solid #333; padding-bottom: 10px; }
+        .checkpoints { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .checkpoint { text-align: center; border: 2px solid #ccc; padding: 20px; break-inside: avoid; }
+        .checkpoint h3 { margin: 0 0 15px 0; font-size: 24px; }
+        #qr1, #qr2, #qr3, #qr4, #qr5, #qr6, #qr7, #qr8, #qr9, #qr10, #qr11, #qr12, #qr13, #qr14, #qr15, #qr16, #qr17, #qr18, #qr19, #qr20, #qr21, #qr22, #qr23, #qr24, #qr25 { margin: 0 auto; }
+        @media print { body { margin: 0; } .course { page-break-after: always; } }
+    </style>
+</head>
+<body>
+    <h1>🧭 Fyling Hall Orienteering - QR Code Checkpoints</h1>
+    <p style="text-align: center; color: #666;">Print this page and laminate each checkpoint card</p>
+
+    <div class="course">
+        <h2>Easy Course (5 Checkpoints)</h2>
+        <div class="checkpoints">
+            <div class="checkpoint"><h3>CP1</h3><div id="qr1"></div></div>
+            <div class="checkpoint"><h3>CP2</h3><div id="qr2"></div></div>
+            <div class="checkpoint"><h3>CP3</h3><div id="qr3"></div></div>
+            <div class="checkpoint"><h3>CP4</h3><div id="qr4"></div></div>
+            <div class="checkpoint"><h3>CP5</h3><div id="qr5"></div></div>
+        </div>
+    </div>
+
+    <div class="course">
+        <h2>Medium Course (8 Checkpoints)</h2>
+        <div class="checkpoints">
+            <div class="checkpoint"><h3>CP1</h3><div id="qr6"></div></div>
+            <div class="checkpoint"><h3>CP2</h3><div id="qr7"></div></div>
+            <div class="checkpoint"><h3>CP3</h3><div id="qr8"></div></div>
+            <div class="checkpoint"><h3>CP4</h3><div id="qr9"></div></div>
+            <div class="checkpoint"><h3>CP5</h3><div id="qr10"></div></div>
+            <div class="checkpoint"><h3>CP6</h3><div id="qr11"></div></div>
+            <div class="checkpoint"><h3>CP7</h3><div id="qr12"></div></div>
+            <div class="checkpoint"><h3>CP8</h3><div id="qr13"></div></div>
+        </div>
+    </div>
+
+    <div class="course">
+        <h2>Hard Course (12 Checkpoints)</h2>
+        <div class="checkpoints">
+            <div class="checkpoint"><h3>CP1</h3><div id="qr14"></div></div>
+            <div class="checkpoint"><h3>CP2</h3><div id="qr15"></div></div>
+            <div class="checkpoint"><h3>CP3</h3><div id="qr16"></div></div>
+            <div class="checkpoint"><h3>CP4</h3><div id="qr17"></div></div>
+            <div class="checkpoint"><h3>CP5</h3><div id="qr18"></div></div>
+            <div class="checkpoint"><h3>CP6</h3><div id="qr19"></div></div>
+            <div class="checkpoint"><h3>CP7</h3><div id="qr20"></div></div>
+            <div class="checkpoint"><h3>CP8</h3><div id="qr21"></div></div>
+            <div class="checkpoint"><h3>CP9</h3><div id="qr22"></div></div>
+            <div class="checkpoint"><h3>CP10</h3><div id="qr23"></div></div>
+            <div class="checkpoint"><h3>CP11</h3><div id="qr24"></div></div>
+            <div class="checkpoint"><h3>CP12</h3><div id="qr25"></div></div>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR codes for all checkpoints
+        const generateQR = (elementId, text) => {
+            new QRCode(document.getElementById(elementId), {
+                text: text,
+                width: 150,
+                height: 150,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        };
+
+        // Easy course
+        generateQR('qr1', 'CP1');
+        generateQR('qr2', 'CP2');
+        generateQR('qr3', 'CP3');
+        generateQR('qr4', 'CP4');
+        generateQR('qr5', 'CP5');
+
+        // Medium course
+        generateQR('qr6', 'CP1');
+        generateQR('qr7', 'CP2');
+        generateQR('qr8', 'CP3');
+        generateQR('qr9', 'CP4');
+        generateQR('qr10', 'CP5');
+        generateQR('qr11', 'CP6');
+        generateQR('qr12', 'CP7');
+        generateQR('qr13', 'CP8');
+
+        // Hard course
+        generateQR('qr14', 'CP1');
+        generateQR('qr15', 'CP2');
+        generateQR('qr16', 'CP3');
+        generateQR('qr17', 'CP4');
+        generateQR('qr18', 'CP5');
+        generateQR('qr19', 'CP6');
+        generateQR('qr20', 'CP7');
+        generateQR('qr21', 'CP8');
+        generateQR('qr22', 'CP9');
+        generateQR('qr23', 'CP10');
+        generateQR('qr24', 'CP11');
+        generateQR('qr25', 'CP12');
+    </script>
+</body>
+</html>
+cat > ~/fyling-orienteering/public/qr-codes.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orienteering QR Codes - Print</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial; margin: 20px; background: white; }
+        h1 { text-align: center; }
+        .course { page-break-after: always; margin-bottom: 40px; }
+        .course h2 { border-bottom: 3px solid #333; padding-bottom: 10px; }
+        .checkpoints { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .checkpoint { text-align: center; border: 2px solid #ccc; padding: 20px; break-inside: avoid; }
+        .checkpoint h3 { margin: 0 0 15px 0; font-size: 24px; }
+        #qr1, #qr2, #qr3, #qr4, #qr5, #qr6, #qr7, #qr8, #qr9, #qr10, #qr11, #qr12, #qr13, #qr14, #qr15, #qr16, #qr17, #qr18, #qr19, #qr20, #qr21, #qr22, #qr23, #qr24, #qr25 { margin: 0 auto; }
+        @media print { body { margin: 0; } .course { page-break-after: always; } }
+    </style>
+</head>
+<body>
+    <h1>🧭 Fyling Hall Orienteering - QR Code Checkpoints</h1>
+    <p style="text-align: center; color: #666;">Print this page and laminate each checkpoint card</p>
+
+    <div class="course">
+        <h2>Easy Course (5 Checkpoints)</h2>
+        <div class="checkpoints">
+            <div class="checkpoint"><h3>CP1</h3><div id="qr1"></div></div>
+            <div class="checkpoint"><h3>CP2</h3><div id="qr2"></div></div>
+            <div class="checkpoint"><h3>CP3</h3><div id="qr3"></div></div>
+            <div class="checkpoint"><h3>CP4</h3><div id="qr4"></div></div>
+            <div class="checkpoint"><h3>CP5</h3><div id="qr5"></div></div>
+        </div>
+    </div>
+
+    <div class="course">
+        <h2>Medium Course (8 Checkpoints)</h2>
+        <div class="checkpoints">
+            <div class="checkpoint"><h3>CP1</h3><div id="qr6"></div></div>
+            <div class="checkpoint"><h3>CP2</h3><div id="qr7"></div></div>
+            <div class="checkpoint"><h3>CP3</h3><div id="qr8"></div></div>
+            <div class="checkpoint"><h3>CP4</h3><div id="qr9"></div></div>
+            <div class="checkpoint"><h3>CP5</h3><div id="qr10"></div></div>
+            <div class="checkpoint"><h3>CP6</h3><div id="qr11"></div></div>
+            <div class="checkpoint"><h3>CP7</h3><div id="qr12"></div></div>
+            <div class="checkpoint"><h3>CP8</h3><div id="qr13"></div></div>
+        </div>
+    </div>
+
+    <div class="course">
+        <h2>Hard Course (12 Checkpoints)</h2>
+        <div class="checkpoints">
+            <div class="checkpoint"><h3>CP1</h3><div id="qr14"></div></div>
+            <div class="checkpoint"><h3>CP2</h3><div id="qr15"></div></div>
+            <div class="checkpoint"><h3>CP3</h3><div id="qr16"></div></div>
+            <div class="checkpoint"><h3>CP4</h3><div id="qr17"></div></div>
+            <div class="checkpoint"><h3>CP5</h3><div id="qr18"></div></div>
+            <div class="checkpoint"><h3>CP6</h3><div id="qr19"></div></div>
+            <div class="checkpoint"><h3>CP7</h3><div id="qr20"></div></div>
+            <div class="checkpoint"><h3>CP8</h3><div id="qr21"></div></div>
+            <div class="checkpoint"><h3>CP9</h3><div id="qr22"></div></div>
+            <div class="checkpoint"><h3>CP10</h3><div id="qr23"></div></div>
+            <div class="checkpoint"><h3>CP11</h3><div id="qr24"></div></div>
+            <div class="checkpoint"><h3>CP12</h3><div id="qr25"></div></div>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR codes for all checkpoints
+        const generateQR = (elementId, text) => {
+            new QRCode(document.getElementById(elementId), {
+                text: text,
+                width: 150,
+                height: 150,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        };
+
+        // Easy course
+        generateQR('qr1', 'CP1');
+        generateQR('qr2', 'CP2');
+        generateQR('qr3', 'CP3');
+        generateQR('qr4', 'CP4');
+        generateQR('qr5', 'CP5');
+
+        // Medium course
+        generateQR('qr6', 'CP1');
+        generateQR('qr7', 'CP2');
+        generateQR('qr8', 'CP3');
+        generateQR('qr9', 'CP4');
+        generateQR('qr10', 'CP5');
+        generateQR('qr11', 'CP6');
+        generateQR('qr12', 'CP7');
+        generateQR('qr13', 'CP8');
+
+        // Hard course
+        generateQR('qr14', 'CP1');
+        generateQR('qr15', 'CP2');
+        generateQR('qr16', 'CP3');
+        generateQR('qr17', 'CP4');
+        generateQR('qr18', 'CP5');
+        generateQR('qr19', 'CP6');
+        generateQR('qr20', 'CP7');
+        generateQR('qr21', 'CP8');
+        generateQR('qr22', 'CP9');
+        generateQR('qr23', 'CP10');
+        generateQR('qr24', 'CP11');
+        generateQR('qr25', 'CP12');
+    </script>
+</body>
+</html>
