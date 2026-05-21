@@ -14,9 +14,10 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Database initialization
-const db = new sqlite3.Database(':memory:', (err) => {
+const dbPath = path.join(__dirname, 'database.db');
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error('DB error:', err);
-  else console.log('Connected to SQLite database');
+  else console.log('Connected to SQLite database at ' + dbPath);
 });
 
 // Initialize database schema
