@@ -51,17 +51,14 @@ const initDB = () => {
     db.run(`
       CREATE TABLE IF NOT EXISTS results (
         id TEXT PRIMARY KEY,
-        team_id TEXT NOT NULL,
-        course_id TEXT NOT NULL,
-        start_time DATETIME,
-        end_time DATETIME,
-        total_time INTEGER,
-        checkpoint_times TEXT,
+        team TEXT NOT NULL,
         house TEXT NOT NULL,
-        points INTEGER DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(team_id) REFERENCES teams(id),
-        FOREIGN KEY(course_id) REFERENCES courses(id)
+        course TEXT NOT NULL,
+        time INTEGER,
+        checkpointsScanned INTEGER,
+        totalCheckpoints INTEGER,
+        completed INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
@@ -144,26 +141,28 @@ app.post('/api/teams', (req, res) => {
 
 // Submit a result (student app)
 app.post('/api/results', (req, res) => {
-  const { team_id, course_id, start_time, end_time, checkpoint_times, house } = req.body;
+  // Accept both old format (team_id, course_id) and new format (team, course)
+  const team = req.body.team || req.body.team_name;
+  const house = req.body.house;
+  const course = req.body.course;
+  const time = req.body.time;
+  const checkpointsScanned = req.body.checkpointsScanned;
+  const totalCheckpoints = req.body.totalCheckpoints;
+  const completed = req.body.completed || false;
   const id = uuidv4();
-  const total_time = Math.round((new Date(end_time) - new Date(start_time)) / 1000);
 
   db.run(
-    'INSERT INTO results (id, team_id, course_id, start_time, end_time, total_time, checkpoint_times, house) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    [id, team_id, course_id, start_time, end_time, total_time, JSON.stringify(checkpoint_times), house],
+    `INSERT INTO results (id, team, house, course, time, checkpointsScanned, totalCheckpoints, completed, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+    [id, team, house, course, time, checkpointsScanned, totalCheckpoints, completed ? 1 : 0],
     (err) => {
       if (err) {
+        console.error('Insert error:', err);
         res.status(500).json({ error: err.message });
         return;
       }
 
-      // Update house points
-      db.run(
-        'INSERT INTO house_points (id, house, total_points) VALUES (?, ?, 100) ON CONFLICT(house) DO UPDATE SET total_points = total_points + 100, session_count = session_count + 1',
-        [uuidv4(), house]
-      );
-
-      res.json({ id, team_id, course_id, total_time });
+      res.json({ id, team, house, course, time });
     }
   );
 });
@@ -212,19 +211,22 @@ app.get('/api/results/:courseId', (req, res) => {
   const { courseId } = req.params;
 
   db.all(
-    `SELECT
-      r.*, t.name, t.house
-    FROM results r
-    JOIN teams t ON r.team_id = t.id
-    WHERE r.course_id = ?
-    ORDER BY r.total_time ASC`,
+    `SELECT * FROM results
+    WHERE course = ?
+    ORDER BY time ASC`,
     [courseId],
     (err, rows) => {
       if (err) {
+        console.error('Query error:', err);
         res.status(500).json({ error: err.message });
         return;
       }
-      res.json(rows);
+      // Ensure boolean fields are properly formatted
+      const formattedRows = (rows || []).map(r => ({
+        ...r,
+        completed: Boolean(r.completed)
+      }));
+      res.json(formattedRows);
     }
   );
 });
