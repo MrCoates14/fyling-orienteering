@@ -402,14 +402,20 @@
         }
 
         function stopScanning() {
-            // Hide scanner and show button
-            document.getElementById('scanner').style.display = 'none';
-            document.getElementById('takeScanBtn').style.display = 'block';
-            document.getElementById('manualEntrySection').style.display = 'none';
-            scanningEnabled = false;
+            try {
+                // Hide scanner and show button
+                document.getElementById('scanner').style.display = 'none';
+                document.getElementById('takeScanBtn').style.display = 'block';
+                document.getElementById('manualEntrySection').style.display = 'none';
+                scanningEnabled = false;
 
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().catch(() => {});
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => {
+                        console.error('Error stopping scanner:', err);
+                    });
+                }
+            } catch (err) {
+                console.error('Error in stopScanning:', err);
             }
         }
 
@@ -480,56 +486,68 @@
             // Stop scanning and show button for next scan
             stopScanning();
 
+            // Check if course is complete
             if (scannedCheckpoints.length === sequence.length) {
+                console.log('Course complete! All checkpoints scanned.');
                 // Small delay so user can see the checkpoint was added
                 setTimeout(() => {
                     finishCourse();
                 }, 500);
+            } else {
+                console.log(`Scanned ${scannedCheckpoints.length}/${sequence.length} checkpoints`);
             }
         }
 
         function finishCourse() {
-            clearInterval(timerInterval);
-            if (html5QrCode) {
-                html5QrCode.stop().catch(() => {});
+            try {
+                clearInterval(timerInterval);
+
+                if (html5QrCode) {
+                    html5QrCode.stop().catch(() => {});
+                }
+
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const sequence = getCourseSequence(currentCourse);
+                const completed = scannedCheckpoints.length === sequence.length;
+
+                // Calculate points: 5 per checkpoint + 100 bonus if complete - time penalty
+                let points = scannedCheckpoints.length * 5;
+                if (completed) {
+                    points += 100 - Math.floor(elapsed / 10);
+                }
+                points = Math.max(0, points); // Don't allow negative points
+
+                const result = {
+                    team: currentTeam.name,
+                    house: currentTeam.house,
+                    course: currentCourse,
+                    time: elapsed,
+                    checkpointsScanned: scannedCheckpoints.length,
+                    totalCheckpoints: sequence.length,
+                    completed: completed,
+                    points: points,
+                    timestamp: new Date().toISOString()
+                };
+
+                localStorage.setItem('lastResult', JSON.stringify(result));
+
+                // Save to backend
+                fetch('/api/results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(result)
+                }).catch(err => {
+                    console.error('Error saving results:', err);
+                });
+
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                alert(`Course finished!\n${currentTeam.name}: ${mins}m ${secs}s\nCheckpoints: ${scannedCheckpoints.length}/${sequence.length}\nPoints: ${points}`);
+                location.reload();
+            } catch (err) {
+                console.error('Error in finishCourse:', err);
+                alert('Error finishing course. Check console.');
             }
-
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const sequence = getCourseSequence(currentCourse);
-            const completed = scannedCheckpoints.length === sequence.length;
-
-            // Calculate points: 5 per checkpoint + 100 bonus if complete - time penalty
-            let points = scannedCheckpoints.length * 5;
-            if (completed) {
-                points += 100 - Math.floor(elapsed / 10);
-            }
-            points = Math.max(0, points); // Don't allow negative points
-
-            const result = {
-                team: currentTeam.name,
-                house: currentTeam.house,
-                course: currentCourse,
-                time: elapsed,
-                checkpointsScanned: scannedCheckpoints.length,
-                totalCheckpoints: sequence.length,
-                completed: completed,
-                points: points,
-                timestamp: new Date().toISOString()
-            };
-
-            localStorage.setItem('lastResult', JSON.stringify(result));
-
-            // Save to backend
-            fetch('/api/results', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(result)
-            }).catch(() => {});
-
-            const mins = Math.floor(elapsed / 60);
-            const secs = elapsed % 60;
-            alert(`Course finished!\n${currentTeam.name}: ${mins}m ${secs}s\nCheckpoints: ${scannedCheckpoints.length}/${sequence.length}\nPoints: ${points}`);
-            location.reload();
         }
 
         function abandonCourse() {
