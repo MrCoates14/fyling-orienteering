@@ -285,6 +285,8 @@
         let scannedCheckpoints = [];
         let nextCheckpointIndex = 0;
         let html5QrCode = null;
+        let lastScanTime = 0;
+        const SCAN_COOLDOWN = 1500; // 1.5 seconds between scans
 
         // 12 courses with checkpoint sequences (numbered 1-12)
         // Speed courses allow any order - just scan all checkpoints as fast as possible
@@ -325,6 +327,7 @@
             startTime = Date.now();
             scannedCheckpoints = [];
             nextCheckpointIndex = 0;
+            lastScanTime = 0; // Reset cooldown for new course
 
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('course-screen').classList.remove('hidden');
@@ -385,6 +388,13 @@
         }
 
         function onScanSuccess(decodedText) {
+            // Prevent duplicate scans within cooldown period
+            const now = Date.now();
+            if (now - lastScanTime < SCAN_COOLDOWN) {
+                return; // Ignore scan, still in cooldown
+            }
+            lastScanTime = now;
+
             // Stop scanner to prevent multiple rapid fires (fixes iOS freeze)
             if (html5QrCode) {
                 html5QrCode.pause();
