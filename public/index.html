@@ -395,21 +395,8 @@
             }
             lastScanTime = now;
 
-            // Stop scanner to prevent multiple rapid fires (fixes iOS freeze)
-            if (html5QrCode) {
-                html5QrCode.pause();
-            }
-
             document.getElementById('qrInput').value = decodedText;
-
-            // Process scan with small delay to prevent blocking
-            setTimeout(() => {
-                scanCheckpoint();
-                // Resume scanner after processing
-                if (html5QrCode) {
-                    html5QrCode.resume().catch(() => {});
-                }
-            }, 100);
+            scanCheckpoint();
         }
 
         function onScanFailure(error) {
@@ -456,8 +443,18 @@
             renderCheckpoints();
             updateNextCheckpoint();
 
+            // Stop scanner to let iOS camera reset
+            if (html5QrCode) {
+                html5QrCode.stop().catch(() => {});
+            }
+
             if (scannedCheckpoints.length === sequence.length) {
                 finishCourse();
+            } else {
+                // Restart scanner after a brief delay to let camera reset
+                setTimeout(() => {
+                    startQRScanner();
+                }, 500);
             }
         }
 
