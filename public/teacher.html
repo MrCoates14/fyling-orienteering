@@ -47,6 +47,12 @@
             cursor: pointer;
             font-weight: 600;
         }
+        .controls button.danger {
+            background: #e74c3c;
+        }
+        .controls button.danger:hover {
+            background: #c0392b;
+        }
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -127,6 +133,7 @@
             </select>
             <button onclick="refreshData()">🔄 Refresh Live Data</button>
             <button onclick="exportCSV()">📊 Export Results</button>
+            <button class="danger" onclick="clearResults()">🗑️ Clear Results</button>
         </div>
 
         <div class="stats" id="stats"></div>
@@ -250,6 +257,29 @@
 
         function refreshData() {
             loadCourse();
+        }
+
+        function clearResults() {
+            const course = document.getElementById('courseSelect').value;
+            if (!course) {
+                alert('Please select a course first.');
+                return;
+            }
+
+            if (confirm(`⚠️ Clear all results for ${course}?\n\nThis cannot be undone. Make sure you exported results if needed.`)) {
+                fetch(`/api/results/${course}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(`✓ Results cleared for ${course}`);
+                    loadCourse();
+                })
+                .catch(err => {
+                    console.error('Error clearing results:', err);
+                    alert('Error clearing results. Check browser console.');
+                });
+            }
         }
 
         function exportCSV() {

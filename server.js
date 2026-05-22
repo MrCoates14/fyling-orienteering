@@ -238,6 +238,24 @@ app.get('/api/results/:courseId', (req, res) => {
   );
 });
 
+// Delete results for a course
+app.delete('/api/results/:courseId', (req, res) => {
+  const { courseId } = req.params;
+
+  db.run(
+    `DELETE FROM results WHERE course = ?`,
+    [courseId],
+    (err) => {
+      if (err) {
+        console.error('Delete error:', err);
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({ success: true, message: `Cleared results for ${courseId}` });
+    }
+  );
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
