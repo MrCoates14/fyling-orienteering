@@ -385,8 +385,21 @@
         }
 
         function onScanSuccess(decodedText) {
+            // Stop scanner to prevent multiple rapid fires (fixes iOS freeze)
+            if (html5QrCode) {
+                html5QrCode.pause();
+            }
+
             document.getElementById('qrInput').value = decodedText;
-            scanCheckpoint();
+
+            // Process scan with small delay to prevent blocking
+            setTimeout(() => {
+                scanCheckpoint();
+                // Resume scanner after processing
+                if (html5QrCode) {
+                    html5QrCode.resume().catch(() => {});
+                }
+            }, 100);
         }
 
         function onScanFailure(error) {
