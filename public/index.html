@@ -246,16 +246,19 @@
                 <div class="next-checkpoint-number" id="nextCheckpoint">1</div>
             </div>
 
-            <div id="scanner"></div>
-            <div id="scannerFallback">
+            <div id="scanner" style="display: none;"></div>
+
+            <div id="scannerFallback" style="display: none;">
                 <strong>Camera not available</strong><br>
                 Use manual entry below
             </div>
 
-            <div class="form-group">
-                <label for="qrInput">Scan or Enter Checkpoint Number:</label>
-                <input type="text" id="qrInput" placeholder="Scan QR code or type number" inputmode="numeric">
-                <button onclick="scanCheckpoint()">✓ Scan</button>
+            <button id="takeScanBtn" class="primary" onclick="startScanning()" style="font-size: 18px; padding: 16px; margin-bottom: 20px;">📷 Take Scan</button>
+
+            <div id="manualEntrySection" class="form-group" style="display: none;">
+                <label for="qrInput">Enter Checkpoint Number:</label>
+                <input type="text" id="qrInput" placeholder="Type number" inputmode="numeric">
+                <button onclick="scanCheckpoint()">✓ Submit</button>
             </div>
 
             <div id="checkpoints"></div>
@@ -338,7 +341,7 @@
             renderCheckpoints();
             updateNextCheckpoint();
             startTimer();
-            startQRScanner();
+            // Don't start scanner automatically - wait for "Take Scan" button
         }
 
         function renderCheckpoints() {
@@ -371,9 +374,18 @@
             }, 100);
         }
 
-        function startQRScanner() {
+        function startScanning() {
+            // Show scanner and hide button
+            document.getElementById('scanner').style.display = 'block';
+            document.getElementById('takeScanBtn').style.display = 'none';
+            scanningEnabled = true;
+
+            // Initialize and start scanner
             try {
-                html5QrCode = new Html5Qrcode("scanner");
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("scanner");
+                }
+
                 html5QrCode.start(
                     { facingMode: "environment" },
                     { fps: 10, qrbox: 250 },
@@ -381,12 +393,31 @@
                     onScanFailure
                 ).catch(err => {
                     console.log("QR scanner init error:", err);
-                    document.getElementById('scannerFallback').style.display = 'block';
+                    showManualEntry();
                 });
             } catch (err) {
                 console.log("QR scanner error:", err);
-                document.getElementById('scannerFallback').style.display = 'block';
+                showManualEntry();
             }
+        }
+
+        function stopScanning() {
+            // Hide scanner and show button
+            document.getElementById('scanner').style.display = 'none';
+            document.getElementById('takeScanBtn').style.display = 'block';
+            document.getElementById('manualEntrySection').style.display = 'none';
+            scanningEnabled = false;
+
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(() => {});
+            }
+        }
+
+        function showManualEntry() {
+            document.getElementById('scanner').style.display = 'none';
+            document.getElementById('takeScanBtn').style.display = 'none';
+            document.getElementById('manualEntrySection').style.display = 'block';
+            document.getElementById('scannerFallback').style.display = 'block';
         }
 
         function onScanSuccess(decodedText) {
@@ -394,6 +425,9 @@
             if (!scanningEnabled) {
                 return;
             }
+
+            // Disable scanning to prevent duplicate reads
+            scanningEnabled = false;
 
             document.getElementById('qrInput').value = decodedText;
             scanCheckpoint();
@@ -443,14 +477,14 @@
             renderCheckpoints();
             updateNextCheckpoint();
 
-            // Disable scanning temporarily to prevent duplicates
-            scanningEnabled = false;
-            setTimeout(() => {
-                scanningEnabled = true;
-            }, SCAN_COOLDOWN);
+            // Stop scanning and show button for next scan
+            stopScanning();
 
             if (scannedCheckpoints.length === sequence.length) {
-                finishCourse();
+                // Small delay so user can see the checkpoint was added
+                setTimeout(() => {
+                    finishCourse();
+                }, 500);
             }
         }
 
